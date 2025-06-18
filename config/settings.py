@@ -37,6 +37,10 @@ DEBUG = os.environ.get("DEBUG", 'True').lower() in ['true', 'yes', '1']
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "nexus.sparxapparels.com", "178.128.122.86"]
 
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Current DJANGO_ENVIRONMENT
 ENVIRONMENT = os.environ.get("DJANGO_ENVIRONMENT", default="local")
 
@@ -137,12 +141,24 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if DEBUG:  # If DEBUG is True
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:  # If DEBUG is False
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ.get("POSTGRES_DB_NAME"),
+            'USER': os.environ.get("POSTGRES_DB_USER"),
+            'PASSWORD': os.environ.get("POSTGRES_DB_PASSWORD"),
+            'HOST': 'localhost',
+            'PORT': ''
+        }
+    }
 
 
 # Password validation
@@ -180,7 +196,7 @@ LANGUAGES = [
 # ! Make sure you have cleared the browser cache after changing the default language
 LANGUAGE_CODE = "en"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Colombo"
 
 USE_I18N = True
 
@@ -204,7 +220,7 @@ else:
     MEDIA_ROOT = '/var/www/app/library'
     STATIC_ROOT = '/var/www/app/staticfiles'
 
-# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default URL on which Django application runs for specific environment
 BASE_URL = os.environ.get("BASE_URL", default="http://127.0.0.1:8000")
@@ -238,6 +254,7 @@ EMAIL_HOST_PASSWORD = ""
 # ------------------------------------------------------------------------------
 LOGIN_URL = "/login/"
 LOGOUT_REDIRECT_URL = "/login/"
+SITE_NAME = 'Sparx ERP'
 
 
 # Session
@@ -252,6 +269,7 @@ SESSION_COOKIE_AGE = 3600
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5050",
+    "https://nexus.sparxapparels.com",
 ]
 
 
