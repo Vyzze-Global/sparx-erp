@@ -12,7 +12,7 @@
 <!-- beautify ignore:start -->
 {% if has_customizer %}
 <script>
-{% comment %} if (typeof TemplateCustomizer !== 'undefined') {
+if (typeof TemplateCustomizer !== 'undefined') {
   window.templateCustomizer = new TemplateCustomizer({
     cssPath: '',
     themesPath: '',
@@ -40,7 +40,7 @@
     },
     controls: {{ customizer_controls | safe }},
   });
-} {% endcomment %}
+}
 
 </script>
 {% endif %}
