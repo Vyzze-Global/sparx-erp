@@ -18,6 +18,9 @@
     <!-- Include the styles partial -->
     {% include is_front|yesno:"./partials/styles_front.html,./partials/styles.html" %}
 
+    <link rel="stylesheet" href="{% static 'vendor/libs/toastr/toastr.css' %}" />
+    <link rel="stylesheet" href="{% static 'vendor/libs/animate-css/animate.css' %}" />
+
     {% block vendor_css %}{% endblock vendor_css %}
 
     <!--Page CSS-->
@@ -39,8 +42,23 @@
 
     {% include is_front|yesno:"./partials/scripts_front.html,./partials/scripts.html" %}
 
+    <script src="{% static 'vendor/libs/toastr/toastr.js' %}"></script>
+
     <!--Vendors Javascript-->
     {% block vendor_js %} {% endblock vendor_js %}
+
+    <script>
+    {% if messages %}
+      {% for message in messages %}
+              $(window).on('load', function () {
+          toastr.{{message.tags}}('{{message}}', '{{message.tags|title}}', {
+              closeButton: true,
+              tapToDismiss: false,
+          });
+      });
+      {% endfor %}
+    {% endif %}
+    </script>
 
     <!--Page Javascript-->
     {% block page_js %} {% endblock page_js %}

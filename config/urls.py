@@ -18,6 +18,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from web_project.views import SystemView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -111,9 +113,15 @@ urlpatterns = [
 
     # transaction urls
     path("", include("apps.transactions.urls")),
+
+    # Products urls
+    path("", include("apps.products.urls")),
 ]
 
 handler404 = SystemView.as_view(template_name="pages_misc_error.html", status=404)
 handler403 = SystemView.as_view(template_name="pages_misc_not_authorized.html", status=403)
 handler400 = SystemView.as_view(template_name="pages_misc_error.html", status=400)
 handler500 = SystemView.as_view(template_name="pages_misc_error.html", status=500)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

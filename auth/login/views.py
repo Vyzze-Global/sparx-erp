@@ -1,6 +1,7 @@
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import UserAccount
+from auth.models import UserAccount
 from django.contrib import messages
 from auth.views import AuthView
 
@@ -15,36 +16,36 @@ class LoginView(AuthView):
         return super().get(request)
 
     def post(self, request):
-        if request.method == "POST":
-            username = request.POST.get("email-username")
-            password = request.POST.get("password")
+        username_input = request.POST.get("email-phonenumber")
+        password = request.POST.get("password")
 
-            if not (username and password):
-                messages.error(request, "Please enter your username and password.")
+        if not (username_input and password):
+            messages.error(request, "Please enter your email/phone number and password.")
+            return redirect("login")
+
+        user = None
+
+        # Check if input is an email
+        if "@" in username_input:
+            user = UserAccount.objects.filter(email=username_input).first()
+            if not user:
+                messages.error(request, "No account found with this email.")
                 return redirect("login")
-
-            if "@" in username:
-                user_email = User.objects.filter(email=username).first()
-                if user_email is None:
-                    messages.error(request, "Please enter a valid email.")
-                    return redirect("login")
-                username = user_email.username
-
-            user_email = User.objects.filter(username=username).first()
-            if user_email is None:
-                messages.error(request, "Please enter a valid username.")
+            login_identifier = user.email
+        else:
+            # Otherwise, assume it's a phone number
+            user = UserAccount.objects.filter(phone_number=username_input).first()
+            if not user:
+                messages.error(request, "No account found with this phone number.")
                 return redirect("login")
+            login_identifier = user.email  # We use email as the USERNAME_FIELD for authentication
 
-            authenticated_user = authenticate(request, username=username, password=password)
-            if authenticated_user is not None:
-                # Login the user if authentication is successful
-                login(request, authenticated_user)
+        authenticated_user = authenticate(request, email=login_identifier, password=password)
+        if authenticated_user is not None:
+            login(request, authenticated_user)
 
-                # Redirect to the page the user was trying to access before logging in
-                if "next" in request.POST:
-                    return redirect(request.POST["next"])
-                else: # Redirect to the home page or another appropriate page
-                    return redirect("index")
-            else:
-                messages.error(request, "Please enter a valid username.")
-                return redirect("login")
+            next_url = request.POST.get("next", "index")
+            return redirect(next_url)
+        else:
+            messages.error(request, "Invalid credentials. Please try again.")
+            return redirect("login")

@@ -1,8 +1,9 @@
-.pricing-plans-comparison .table tr > th:first-child,
-.pricing-plans-comparison .table tr > td:first-child {
+.pricing-plans-comparison .table tr>th:first-child,
+.pricing-plans-comparison .table tr>td:first-child {
   white-space: nowrap;
   text-align: start;
 }
+
 .pricing-plans-comparison .table tbody tr:last-child td {
   border-bottom: 0;
 }
@@ -19,7 +20,7 @@
 }
 
 .dark-style .bg-alt-pricing {
-  background-color: #25293c;
+  background-color: #02040A;
 }
 
 @media (min-width: 992px) {
@@ -27,9 +28,11 @@
     position: absolute;
     bottom: 0;
   }
+
   html:not([dir=rtl]) .pricing-free-trial img {
     right: 0;
   }
+
   [dir=rtl] .pricing-free-trial img {
     left: 0;
   }

@@ -1,0 +1,51 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Brand List{% endblock %}
+
+{% block vendor_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-bs5/datatables.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/select2/select2.css' %}" />
+{% endblock vendor_css %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/datatables-bs5/datatables-bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/select2/select2.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block page_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'vendor/css/pages/app-ecommerce.css' %}" />
+{% endblock page_css %}
+
+{% block page_js %}
+{{ block.super }}
+<script src="{% static 'js/brand-list.js' %}"></script>
+{% endblock page_js %}
+
+{% block content %}
+<!-- Brand List Table -->
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title">{% trans "Brand List" %}</h5>
+  </div>
+  <div class="card-datatable table-responsive">
+    <table class="datatables-brand-list table">
+      <thead class="border-top">
+        <tr>
+          <th></th> <!-- Control column -->
+          <th>{% trans "Name & Logo" %}</th>
+          <th>{% trans "Description" %}</th>
+          <th>{% trans "Actions" %}</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+</div>
+{% endblock %}

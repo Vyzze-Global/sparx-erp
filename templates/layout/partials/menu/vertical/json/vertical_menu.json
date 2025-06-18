@@ -40,6 +40,94 @@
       ]
     },
     {
+      "menu_header": "Product Manager"
+    },
+    {
+      "name": "Departments",
+      "icon": "menu-icon tf-icons ti ti-box",
+      "slug": "departments",
+      "submenu": [
+        {
+          "url": "departments",
+          "name": "Department List",
+          "slug": "department-list"
+        },
+        {
+          "url": "departments-add",
+          "name": "Add Department",
+          "slug": "departments-add"
+        }
+      ]
+    },
+    {
+      "name": "Brands",
+      "icon": "menu-icon tf-icons ti ti-box",
+      "slug": "brands",
+      "submenu": [
+        {
+          "url": "brands",
+          "name": "Brand List",
+          "slug": "brands-list"
+        },
+        {
+          "url": "brands-add",
+          "name": "Add Brand",
+          "slug": "brands-add"
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "icon": "menu-icon tf-icons ti ti-box",
+      "slug": "categories",
+      "submenu": [
+        {
+          "url": "categories",
+          "name": "Category List",
+          "slug": "category-list"
+        },
+        {
+          "url": "categories-add",
+          "name": "Add Category",
+          "slug": "categories-add"
+        }
+      ]
+    },
+    {
+      "name": "Suppliers",
+      "icon": "menu-icon tf-icons ti ti-box",
+      "slug": "suppliers",
+      "submenu": [
+        {
+          "url": "suppliers",
+          "name": "Supplier List",
+          "slug": "suppliers-list"
+        },
+        {
+          "url": "suppliers-add",
+          "name": "Add Supplier",
+          "slug": "suppliers-add"
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "icon": "menu-icon tf-icons ti ti-box",
+      "slug": "products",
+      "submenu": [
+        {
+          "url": "products",
+          "name": "Product List",
+          "slug": "products-list"
+        },
+        {
+          "url": "products-add",
+          "name": "Add Product",
+          "slug": "products-add"
+        }
+      ]
+    },
+    {
       "url": "transactions",
       "name": "Transactions (CRUD)",
       "permission": "transactions.view_transaction",

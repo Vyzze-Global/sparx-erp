@@ -7,6 +7,7 @@
 .user-profile-header {
   margin-top: -2rem;
 }
+
 .user-profile-header .user-profile-img {
   border: 5px solid;
   width: 120px;
@@ -17,7 +18,7 @@
 }
 
 .dark-style .user-profile-header .user-profile-img {
-  border-color: #2f3349;
+  border-color: #161A22;
 }
 
 .dataTables_wrapper .card-header .dataTables_filter label {
@@ -29,6 +30,7 @@
   .user-profile-header-banner img {
     height: 150px;
   }
+
   .user-profile-header .user-profile-img {
     width: 100px;
   }

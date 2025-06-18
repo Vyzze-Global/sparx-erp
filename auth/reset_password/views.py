@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from auth.models import Profile
+from auth.models import EmployeeProfile
 from auth.views import AuthView
 from django.contrib.auth import authenticate, login
 
@@ -15,8 +15,8 @@ class ResetPasswordView(AuthView):
 
     def post(self, request, token):
         try:
-            profile = Profile.objects.get(forget_password_token=token)
-        except Profile.DoesNotExist:
+            profile = EmployeeProfile.objects.get(forget_password_token=token)
+        except EmployeeProfile.DoesNotExist:
             messages.error(request, "Invalid or expired token.")
             return redirect("forgot-password")
 
