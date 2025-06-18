@@ -56,19 +56,22 @@ $open-customizer-primary-color: var(--bs-primary);
     font-size: 11px;
   }
 
-  > h5 {
+  >h5 {
     flex: 0 0 auto;
   }
 
   .disabled {
     color: #d1d2d3 !important;
   }
+
   .form-label {
     font-size: 0.9375rem;
   }
+
   .form-check-label {
     font-size: 0.8125rem;
   }
+
   &.template-customizer-open {
     -webkit-transition-delay: 0.1s;
     -o-transition-delay: 0.1s;
@@ -89,6 +92,7 @@ $open-customizer-primary-color: var(--bs-primary);
       color: inherit !important;
     }
   }
+
   // Customizer button
 
   .template-customizer-open-btn {
@@ -98,6 +102,7 @@ $open-customizer-primary-color: var(--bs-primary);
     @media (max-width: 991.98px) {
       top: $open-btn-top-md;
     }
+
     left: 0;
     z-index: -1;
     display: block;
@@ -106,7 +111,7 @@ $open-customizer-primary-color: var(--bs-primary);
     border-top-left-radius: $open-btn-border-radius;
     border-bottom-left-radius: $open-btn-border-radius;
     background: $open-btn-bg;
-    box-shadow: 0px 2px 6px 0px rgba(115, 103, 240, 0.3);
+    box-shadow: 0px 2px 6px 0px rgba(44, 53, 126, 0.3);
     color: $open-btn-color !important;
     text-align: center;
     font-size: $open-btn-font-size !important;
@@ -122,6 +127,7 @@ $open-customizer-primary-color: var(--bs-primary);
     .dark-style & {
       background: $open-btn-bg-dark;
     }
+
     &::before {
       content: '';
       width: 22px;
@@ -173,11 +179,12 @@ $open-customizer-primary-color: var(--bs-primary);
     -o-transition: opacity 0.2s;
     transition: opacity 0.2s;
 
-    > div:first-child {
-      > hr:first-of-type {
+    >div:first-child {
+      >hr:first-of-type {
         display: none !important;
       }
-      > h5:first-of-type {
+
+      >h5:first-of-type {
         padding-top: 0 !important;
       }
     }
@@ -216,7 +223,7 @@ $open-customizer-primary-color: var(--bs-primary);
       opacity: 0;
     }
 
-    input ~ span {
+    input~span {
       opacity: 0.25;
       -webkit-transition: all 0.2s;
       -o-transition: all 0.2s;
@@ -246,12 +253,12 @@ $open-customizer-primary-color: var(--bs-primary);
       }
     }
 
-    input:checked:not([disabled]) ~ span,
-    &:hover input:not([disabled]) ~ span {
+    input:checked:not([disabled])~span,
+    &:hover input:not([disabled])~span {
       opacity: 1;
     }
 
-    input:checked:not([disabled]) ~ span .template-customizer-theme-checkmark {
+    input:checked:not([disabled])~span .template-customizer-theme-checkmark {
       opacity: 1;
     }
   }
@@ -284,12 +291,14 @@ $open-customizer-primary-color: var(--bs-primary);
     }
   }
 }
+
 @media (max-width: $customizer-hide-width) {
   #template-customizer {
     display: none;
     visibility: hidden !important;
   }
 }
+
 @media (max-width: 575.98px) {
   #template-customizer {
     width: $customizer-width-sm;

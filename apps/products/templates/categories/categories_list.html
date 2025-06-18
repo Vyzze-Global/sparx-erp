@@ -1,0 +1,62 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Category List{% endblock %}
+
+{% block vendor_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-bs5/datatables.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/select2/select2.css' %}" />
+{% endblock vendor_css %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/datatables-bs5/datatables-bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/select2/select2.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block page_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'vendor/css/pages/app-ecommerce.css' %}" />
+{% endblock page_css %}
+
+{% block page_js %}
+{{ block.super }}
+<script src="{% static 'js/category-list.js' %}"></script>
+{% endblock page_js %}
+
+{% block content %}
+<!-- Category List Table -->
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title">{% trans "Category List" %}</h5>
+    <div class="d-flex justify-content-between align-items-center row pt-4 gap-6 gap-md-0">
+      <div class="col-md-4 category_type"></div>
+      <div class="col-md-4 category_department"></div>
+      <div class="col-md-4 category_status"></div>
+    </div>
+  </div>
+  <div class="card-datatable table-responsive">
+    <table class="datatables-category-list table">
+      <thead class="border-top">
+        <tr>
+          <th></th>
+          <th>{% trans "ID" %}</th>
+          <th>{% trans "Name" %}</th>
+          <th>{% trans "Display Name" %}</th>
+          <th>{% trans "Type" %}</th>
+          <th>{% trans "Department" %}</th>
+          <th>{% trans "Parent" %}</th>
+          <th>{% trans "Total Products" %}</th>
+          <th>{% trans "Status" %}</th>
+          <th>{% trans "Actions" %}</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+</div>
+{% endblock %}

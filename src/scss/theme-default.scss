@@ -4,7 +4,7 @@
 @import './_theme/pages';
 @import './_theme/_theme';
 
-$primary-color: #7367f0;
+$primary-color: #EE3338;
 $body-bg: #f8f7fa;
 
 body {
@@ -27,15 +27,19 @@ body {
   box-shadow: 0 0 10px $border-color;
   backdrop-filter: saturate(200%) blur(6px);
 }
+
 .menu-horizontal {
   backdrop-filter: saturate(200%) blur(6px);
 }
+
 .layout-horizontal .layout-navbar {
   box-shadow: 0 1px 0 $border-color;
 }
+
 .navbar-detached {
   box-shadow: $box-shadow-sm;
 }
+
 .layout-navbar-fixed .layout-page:before {
   backdrop-filter: saturate(200%) blur(10px);
   background: linear-gradient(180deg, rgba($body-bg, 70%) 44%, rgba($body-bg, 43%) 73%, rgba($body-bg, 0%));
@@ -45,32 +49,36 @@ body {
 
 // Menu
 // ---------------------------------------------------------------------------
-@include template-menu-style(
-  '.bg-menu-theme',
+@include template-menu-style('.bg-menu-theme',
   $card-bg,
   $color: $headings-color,
   $active-color: $headings-color,
   $border: transparent,
-  $active-bg: $primary-color
-);
+  $active-bg: $primary-color);
+
 @include media-breakpoint-up($menu-collapsed-layout-breakpoint) {
   .bg-menu-theme {
     box-shadow: $box-shadow-sm;
   }
 }
+
 .bg-menu-theme {
   .menu-inner {
     .menu-item {
+
       &.open,
       &.active {
-        > .menu-link.menu-toggle {
+        >.menu-link.menu-toggle {
+
           &,
           .layout-menu-hover.layout-menu-collapsed & {
             background: $gray-75;
           }
         }
       }
-      &:not(.active) > .menu-link:hover {
+
+      &:not(.active)>.menu-link:hover {
+
         html:not(.layout-menu-collapsed) &,
         .layout-menu-hover.layout-menu-collapsed & {
           background: $gray-50;
@@ -78,7 +86,8 @@ body {
       }
     }
   }
-  .menu-inner .menu-sub .menu-item:not(.active) > .menu-link::before {
+
+  .menu-inner .menu-sub .menu-item:not(.active)>.menu-link::before {
     color: $body-color !important;
   }
 }

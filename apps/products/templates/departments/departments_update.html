@@ -1,0 +1,102 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Update Department{% endblock title %}
+
+{% block vendor_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'vendor/libs/select2/select2.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/@form-validation/form-validation.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/animate-css/animate.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/sweetalert2/sweetalert2.css' %}" />
+{% endblock vendor_css %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/select2/select2.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/popular.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/auto-focus.js' %}"></script>
+<script src="{% static 'vendor/libs/cleavejs/cleave.js' %}"></script>
+<script src="{% static 'vendor/libs/cleavejs/cleave-phone.js' %}"></script>
+<script src="{% static 'vendor/libs/sweetalert2/sweetalert2.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block page_js %}
+{{ block.super }}
+<script src="{% static 'js/delete-confirmation.js' %}"></script>
+{% endblock page_js %}
+
+{% block content %}
+<!-- Header with action buttons -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 row-gap-4">
+  <div class="d-flex flex-column justify-content-center">
+    <h4 class="mb-1">Update Department</h4>
+  </div>
+  <div class="d-flex align-content-center flex-wrap gap-4">
+    <a href="{% url 'departments' %}" class="btn btn-label-secondary">View Departments</a>
+  </div>
+</div>
+
+<!-- Add Department Form -->
+<div class="card">
+  <div class="card-body">
+    {% if form.errors %}
+      <div class="row">
+        <div class="col-12">
+          <div class="alert alert-danger" role="alert">
+            <h5 class="alert-heading">Please correct the errors below:</h5>
+            <hr>
+            {{ form.non_field_errors }}
+            {% for field in form %}
+              {% for error in field.errors %}
+                <p class="mb-1">- {{ field.label }}: {{ error }}</p>
+              {% endfor %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <form action="{% url 'departments-update' department.id %}" method="post">
+      {% csrf_token %}
+
+      <div class="mb-4">
+        <label class="form-label" for="id_name">Name</label>
+        {{ form.name }}
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label" for="id_description">Description</label>
+        {{ form.description }}
+      </div>
+
+      <button type="submit" class="btn btn-primary me-sm-3 me-1" name="submitButton">Submit</button>
+      <a href="{% url 'departments' %}" class="btn btn-secondary">Back</a>
+    </form>
+  </div>
+</div>
+<!--/ Add Department Form -->
+
+<div class="card mt-10">
+    <h5 class="card-header">Delete Department</h5>
+    <div class="card-body">
+    <div class="mb-6 col-12 mb-0">
+        <div class="alert alert-warning">
+        <h5 class="alert-heading mb-1">Are you sure you want to delete?</h5>
+        <p class="mb-0">Once you delete, there is no going back. Please be certain.</p>
+        </div>
+    </div>
+    <form id="formDelete" data-object="Department" data-name="{{department.name}}" action="{% url 'departments-delete' department.id %}" method="post">
+      {% csrf_token %}
+        <div class="form-check my-8">
+        <input class="form-check-input" type="checkbox" name="objectDeletion" id="objectDeletion" />
+        <label class="form-check-label" for="objectDeletion">I confirm deletion</label>
+        </div>
+        <button type="submit" class="btn btn-danger delete-button" disabled>Delete</button>
+    </form>
+    </div>
+</div>
+{% endblock %}

@@ -51,6 +51,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "apps.dashboards",
+
+    "apps.products",
+    # "apps.billing",
+    # "apps.orders",
+    "apps.systemconfig",
+
     "apps.layouts",
     "apps.front_pages",
     "apps.mail",
@@ -185,14 +191,20 @@ LOCALE_PATHS = [
 ]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
+if DEBUG:
+    STATICFILES_DIRS = [BASE_DIR / "src" / "assets"]
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/library/'
+    MEDIA_ROOT = BASE_DIR / "library"
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+else:
+    STATICFILES_DIRS = ['/var/www/app/src/assets']
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/library/'
+    MEDIA_ROOT = '/var/www/app/library'
+    STATIC_ROOT = '/var/www/app/staticfiles'
 
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-
-STATICFILES_DIRS = [
-    BASE_DIR / "src" / "assets",
-]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default URL on which Django application runs for specific environment
 BASE_URL = os.environ.get("BASE_URL", default="http://127.0.0.1:8000")
@@ -202,6 +214,8 @@ BASE_URL = os.environ.get("BASE_URL", default="http://127.0.0.1:8000")
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTH_USER_MODEL = 'accounts.UserAccount'
 
 # Template Settings
 # ------------------------------------------------------------------------------

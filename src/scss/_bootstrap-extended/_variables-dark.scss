@@ -12,7 +12,7 @@
 
 // scss-docs-start gray-color-variables
 $white: #fff !default;
-$black: #2f3349 !default;
+$black: #161A22 !default;
 
 $base: #e1def5 !default;
 $gray-25: rgba($base, 0.025) !default; // (C)
@@ -32,14 +32,13 @@ $gray-900: rgba($base, 0.9) !default;
 // scss-docs-start gray-colors-map
 $grays: (
   '25': $gray-25,
-  '50': $gray-50
-) !default;
+  '50': $gray-50) !default;
 // scss-docs-end gray-colors-map
 
 // scss-docs-start color-variables
 $blue: #007bff !default;
 $indigo: #6610f2 !default;
-$purple: #7367f0 !default;
+$purple: #EE3338 !default;
 $pink: #e83e8c !default;
 $red: #ff4c51 !default;
 $orange: #fd7e14 !default;
@@ -71,8 +70,7 @@ $theme-colors: (
   'danger': $danger,
   'light': $light,
   'dark': $dark,
-  'gray': $gray
-) !default;
+  'gray': $gray) !default;
 // scss-docs-end theme-colors-map
 
 $color-scheme: 'dark' !default; // (C)
@@ -80,7 +78,7 @@ $color-scheme: 'dark' !default; // (C)
 // * Body
 // *******************************************************************************
 
-$body-bg: #25293c !default;
+$body-bg: #02040A !default;
 $rgba-to-hex-bg: $black !default; // (C)
 $body-color: rgba-to-hex($gray-700, $rgba-to-hex-bg) !default;
 $rgba-to-hex-bg-inverted: rgb(160, 149, 149) !default; // (C)
@@ -120,7 +118,7 @@ $headings-color: rgba-to-hex($gray-900, $rgba-to-hex-bg) !default;
 // * Cards
 // *******************************************************************************
 
-$card-bg: #2f3349 !default;
+$card-bg: #161A22 !default;
 $card-subtitle-color: rgba-to-hex(rgba($base, 0.55), $rgba-to-hex-bg) !default;
 
 // * Tables

@@ -10,7 +10,7 @@
 // JS global variables
 window.config = {
   colors: {
-    primary: '#7367f0',
+    primary: '#EE3338',
     secondary: '#808390',
     success: '#28c76f',
     info: '#00bad1',
@@ -27,7 +27,7 @@ window.config = {
     borderColor: '#e6e6e8'
   },
   colors_label: {
-    primary: '#7367f029',
+    primary: '#EE333829',
     secondary: '#a8aaae29',
     success: '#28c76f29',
     info: '#00cfe829',
@@ -36,8 +36,8 @@ window.config = {
     dark: '#4b4b4b29'
   },
   colors_dark: {
-    cardColor: '#2f3349',
-    bodyBg: '#25293c',
+    cardColor: '#161A22',
+    bodyBg: '#02040A',
     bodyColor: '#b2b1cb',
     headingColor: '#cfcce4',
     textMuted: '#8285a0',

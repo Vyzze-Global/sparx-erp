@@ -2,7 +2,8 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.conf import settings
 from auth.views import AuthView
-from auth.models import Profile
+from auth.models import UserAccount
+from auth.models import EmployeeProfile
 from auth.helpers import send_verification_email
 import uuid
 
@@ -11,7 +12,7 @@ import uuid
 class VerifyEmailTokenView(AuthView):
     def get(self, request, token):
         try:
-            profile = Profile.objects.filter(email_token=token).first()
+            profile = EmployeeProfile.objects.filter(email_token=token).first()
             profile.is_verified = True
             profile.email_token = ""
             profile.save()
@@ -22,7 +23,7 @@ class VerifyEmailTokenView(AuthView):
             return redirect("login")
             # Now, redirect to the login page
 
-        except Profile.DoesNotExist:
+        except EmployeeProfile.DoesNotExist:
             messages.error(request, "Invalid token, please try again")
             return redirect("verify-email-page")
 
@@ -37,12 +38,21 @@ class SendVerificationView(AuthView):
         email, message = self.get_email_and_message(request)
 
         if email:
+            user = UserAccount.objects.filter(email=email).first()
+            if not user or user.user_type != 'employee':
+                messages.error(request, "Employee with this email not found.")
+                return redirect("verify-email-page")
+
+            profile = getattr(user, 'employee_profile', None)
+            if not profile:
+                messages.error(request, "Employee profile not found.")
+                return redirect("verify-email-page")
+
             token = str(uuid.uuid4())
-            user_profile = Profile.objects.filter(email=email).first()
-            user_profile.email_token = token
-            user_profile.save()
+            profile.email_token = token
+            profile.save()
             send_verification_email(email, token)
-            messages.success(request, message)
+            messages.success(request, "Verification email sent successfully.")
         else:
             messages.error(request, "Email not found in session")
 
@@ -50,7 +60,7 @@ class SendVerificationView(AuthView):
 
     def get_email_and_message(self, request):
         if request.user.is_authenticated:
-            email = request.user.profile.email
+            email = request.user.email
 
             if settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD:
                 message = messages.success(request, "Verification email sent successfully")

@@ -4,7 +4,8 @@ from django.contrib import messages
 from django.conf import settings
 from auth.views import AuthView
 from auth.helpers import send_verification_email
-from auth.models import Profile
+# from auth.models import Profile
+from auth.models import UserAccount, EmployeeProfile
 import uuid
 
 
@@ -18,35 +19,37 @@ class RegisterView(AuthView):
         return super().get(request)
 
     def post(self, request):
-        username = request.POST.get("username")
         email = request.POST.get("email")
+        phone_number = request.POST.get('phone_number')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
         password = request.POST.get("password")
 
         # Check if a user with the same username or email already exists
-        if User.objects.filter(username=username, email=email).exists():
+        if UserAccount.objects.filter(phone_number=phone_number, email=email).exists():
             messages.error(request, "User already exists, Try logging in.")
             return redirect("register")
-        elif User.objects.filter(email=email).exists():
+        elif UserAccount.objects.filter(email=email).exists():
             messages.error(request, "Email already exists.")
             return redirect("register")
-        elif User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists.")
+        elif UserAccount.objects.filter(phone_number=phone_number).exists():
+            messages.error(request, "Phone number already exists.")
             return redirect("register")
 
         # Create the user and set their password
-        created_user = User.objects.create_user(username=username, email=email, password=password)
+        created_user = UserAccount.objects.create_employee(phone_number=phone_number, email=email, first_name=first_name, last_name=last_name, password=password)
         created_user.set_password(password)
         created_user.save()
 
         # Add the user to the 'client' group (or any other group you want to use as default for new users)
-        user_group, created = Group.objects.get_or_create(name="client")
+        user_group, created = Group.objects.get_or_create(name="employee")
         created_user.groups.add(user_group)
 
         # Generate a token and send a verification email here
         token = str(uuid.uuid4())
 
         # Set the token in the user's profile
-        user_profile, created = Profile.objects.get_or_create(user=created_user)
+        user_profile, created = EmployeeProfile.objects.get_or_create(user=created_user)
         user_profile.email_token = token
         user_profile.email = email
         user_profile.save()
