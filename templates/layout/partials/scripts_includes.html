@@ -16,31 +16,27 @@ if (typeof TemplateCustomizer !== 'undefined') {
   window.templateCustomizer = new TemplateCustomizer({
     cssPath: '',
     themesPath: '',
-    defaultStyle: "{{style}}", // Required as system style can't decided without JS
-    defaultTextDir: '{% if rtl_mode %}rtl{% else %}ltr{% endif %}',
-    defaultShowDropdownOnHover : {{show_dropdown_onhover_value}},
+    defaultStyle: "{{style}}",
     lang: '{{LANGUAGE_CODE}}',
     pathResolver: function(path) {
+      var base = "{% static 'vendor/css' %}/";
+      var rtl = "{{ rtl_support|yesno:'rtl/,' }}";
+
       var resolvedPaths = {
-        // Core stylesheets
-        'core.css': "{% static 'vendor/css' %}{{rtl_support|yesno:'/rtl,'}}/core.css",
-        'core-dark.css': "{% static 'vendor/css' %}{{rtl_support|yesno:'/rtl,'}}/core-dark.css",
+        'core.css': base + rtl + 'core.css',
+        'core-dark.css': base + rtl + 'core-dark.css',
+        'theme-default.css': base + rtl + 'theme-default.css',
+        'theme-default-dark.css': base + rtl + 'theme-default-dark.css',
+        'theme-bordered.css': base + rtl + 'theme-bordered.css',
+        'theme-bordered-dark.css': base + rtl + 'theme-bordered-dark.css',
+        'theme-semi-dark.css': base + rtl + 'theme-semi-dark.css',
+        'theme-semi-dark-dark.css': base + rtl + 'theme-semi-dark-dark.css',
+      };
 
-        'theme-default.css': "{% static 'vendor/css' %}{{rtl_support|yesno:'/rtl,'}}/theme-default.css",
-        'theme-default-dark.css': "{% static 'vendor/css' %}{{rtl_support|yesno:'/rtl,'}}/theme-default-dark.css",
-
-        'theme-bordered.css': "{% static 'vendor/css' %}{{rtl_support|yesno:'/rtl,'}}/theme-bordered.css",
-        'theme-bordered-dark.css': "{% static 'vendor/css' %}{{rtl_support|yesno:'/rtl,'}}/theme-bordered-dark.css",
-
-        'theme-semi-dark.css': "{% static 'vendor/css' %}{{rtl_support|yesno:'/rtl,'}}/theme-semi-dark.css",
-        'theme-semi-dark-dark.css': "{% static 'vendor/css' %}{{rtl_support|yesno:'/rtl,'}}/theme-semi-dark-dark.css"
-
-      }
       return resolvedPaths[path] || path;
     },
-    controls: {{ customizer_controls | safe }},
+    controls: ['rtl', 'style'],
   });
 }
-
 </script>
 {% endif %}
