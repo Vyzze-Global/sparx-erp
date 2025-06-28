@@ -35,7 +35,7 @@ DEBUG = os.environ.get("DEBUG", 'True').lower() in ['true', 'yes', '1']
 
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "cloud.beyondhealth.lk", "209.97.164.171"]
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "nexus.sparxapparels.com", "178.128.122.86"]
 
 # Current DJANGO_ENVIRONMENT
 ENVIRONMENT = os.environ.get("DJANGO_ENVIRONMENT", default="local")
@@ -216,11 +216,11 @@ if DEBUG:
     MEDIA_ROOT = BASE_DIR / "library"
     STATIC_ROOT = BASE_DIR / "staticfiles"
 else:
-    STATICFILES_DIRS = ['/var/www/cloud/src/assets']
+    STATICFILES_DIRS = ['/var/www/app/src/assets']
     STATIC_URL = '/static/'
     MEDIA_URL = '/library/'
-    MEDIA_ROOT = '/var/www/cloud/library'
-    STATIC_ROOT = '/var/www/cloud/staticfiles'
+    MEDIA_ROOT = '/var/www/app/library'
+    STATIC_ROOT = '/var/www/app/staticfiles'
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -273,7 +273,7 @@ SESSION_COOKIE_AGE = 3600
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5050",
-    "https://*.beyondhealth.lk",
+    "https://*.sparxapparels.lk",
 ]
 
 
