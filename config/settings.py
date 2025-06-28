@@ -35,8 +35,7 @@ DEBUG = os.environ.get("DEBUG", 'True').lower() in ['true', 'yes', '1']
 
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "nexus.sparxapparels.com", "178.128.122.86"]
-
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "cloud.beyondhealth.lk", "209.97.164.171"]
 
 # Current DJANGO_ENVIRONMENT
 ENVIRONMENT = os.environ.get("DJANGO_ENVIRONMENT", default="local")
@@ -54,9 +53,11 @@ INSTALLED_APPS = [
     "apps.dashboards",
 
     "apps.products",
-    # "apps.billing",
-    # "apps.orders",
+    "apps.billing",
+    "apps.orders",
     "apps.systemconfig",
+    "apps.pos",
+    "apps.loyalty",
 
     "apps.layouts",
     "apps.front_pages",
@@ -86,13 +87,17 @@ INSTALLED_APPS = [
     "apps.charts",
     "apps.maps",
     "apps.transactions",
-    "auth.apps.AuthConfig"
+    "auth.apps.AuthConfig",
+
+    "easyaudit",
+    "datatableview",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "easyaudit.middleware.easyaudit.EasyAuditMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     
     "web_project.language_middleware.DefaultLanguageMiddleware",
@@ -193,7 +198,7 @@ LANGUAGES = [
 # ! Make sure you have cleared the browser cache after changing the default language
 LANGUAGE_CODE = "en"
 
-TIME_ZONE = "Asia/Colombo"
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -211,11 +216,11 @@ if DEBUG:
     MEDIA_ROOT = BASE_DIR / "library"
     STATIC_ROOT = BASE_DIR / "staticfiles"
 else:
-    STATICFILES_DIRS = ['/var/www/app/src/assets']
+    STATICFILES_DIRS = ['/var/www/cloud/src/assets']
     STATIC_URL = '/static/'
     MEDIA_URL = '/library/'
-    MEDIA_ROOT = '/var/www/app/library'
-    STATIC_ROOT = '/var/www/app/staticfiles'
+    MEDIA_ROOT = '/var/www/cloud/library'
+    STATIC_ROOT = '/var/www/cloud/staticfiles'
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -237,6 +242,9 @@ THEME_LAYOUT_DIR = THEME_LAYOUT_DIR
 TEMPLATE_CONFIG = TEMPLATE_CONFIG
 THEME_VARIABLES = THEME_VARIABLES
 
+MAX_OTP_TRY = 3
+MIN_PASSWORD_LENGTH = 8
+
 # Email Settings
 # ------------------------------------------------------------------------------
 
@@ -251,7 +259,6 @@ EMAIL_HOST_PASSWORD = ""
 # ------------------------------------------------------------------------------
 LOGIN_URL = "/login/"
 LOGOUT_REDIRECT_URL = "/login/"
-SITE_NAME = 'Sparx ERP'
 
 
 # Session
@@ -266,7 +273,7 @@ SESSION_COOKIE_AGE = 3600
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5050",
-    "https://nexus.sparxapparels.com",
+    "https://*.beyondhealth.lk",
 ]
 
 

@@ -54,8 +54,8 @@ class ProductVariationForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'readonly': 'readonly'}),
             # The 'sku' entry here is no longer needed but leaving it doesn't cause harm.
             'barcode': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Barcode'}),
-            'standard_price': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
-            'standard_sale_price': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'standard_price': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Std. Price'}),
+            'standard_sale_price': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'placeholder': 'Std. Sale Price'}),
             'image': forms.ClearableFileInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input form-check-sm'}),
         }

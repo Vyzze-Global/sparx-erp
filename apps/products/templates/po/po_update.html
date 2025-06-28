@@ -1,0 +1,271 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Update PO{% endblock %}
+
+{% block vendor_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'vendor/libs/flatpickr/flatpickr.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/select2/select2.css' %}" />
+
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-bs5/datatables.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/flatpickr/flatpickr.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-rowgroup-bs5/rowgroup.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/@form-validation/form-validation.css' %}" />
+{% endblock %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/flatpickr/flatpickr.js' %}"></script>
+<script src="{% static 'vendor/libs/select2/select2.js' %}"></script>
+
+<script src="{% static 'vendor/libs/datatables-bs5/datatables-bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/moment/moment.js' %}"></script>
+<script src="{% static 'vendor/libs/flatpickr/flatpickr.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/popular.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/auto-focus.js' %}"></script>
+{% endblock %}
+
+{% block page_js %}
+{{ block.super }}
+<script src="{% static 'js/product-list-popup.js' %}"></script>
+{% endblock page_js %}
+
+{% block content %}
+<!-- Header with action buttons -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 row-gap-4">
+<div class="d-flex flex-column justify-content-center">
+    <h4 class="mb-1">Update PO-{{ form.instance.po_number }}</h4>
+</div>
+<div class="d-flex align-content-center flex-wrap gap-4">
+    <a href="{% url 'pos' %}" class="btn btn-label-secondary">Purchase Order List</a>
+</div>
+</div>
+      
+<div class="row invoice-add">
+  <div class="col-lg-9 col-12 mb-lg-0 mb-6">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="po_update" value="1">
+      <input type="hidden" id="purchaseOrderId" value="{{ form.instance.id }}">
+      {{ form.status }}
+      <div class="card invoice-preview-card p-sm-12 p-6">
+        <h4 class="mb-5">Purchase Order</h4>
+        <div class="card-body invoice-preview-header rounded">
+          <div class="d-flex flex-wrap flex-column flex-sm-row justify-content-between text-heading">
+            <div class="mb-md-0 mb-6">
+              <div class="d-flex svg-illustration mb-6 gap-2 align-items-center">
+                <div class="app-brand-logo demo">
+                   {% include 'partials/logo.html' with height=20 bgcolor="fill: #fff;" %}
+                </div>
+                <span class="app-brand-text fw-bold fs-4 ms-50">
+                 {% get_theme_variables 'template_name' %}
+                </span>
+              </div>
+              <p class="mb-2">62 Colombo - Horana Rd,</p>
+              <p class="mb-2">Piliyandala 10300, Sri Lanka</p>
+              <p class="mb-3">0115 219 460</p>
+            </div>
+            <div class="col-md-5 col-8 pe-0 ps-0 ps-md-2">
+              <dl class="row mb-0">
+                <dt class="col-sm-5 mb-2 d-md-flex align-items-center justify-content-end">
+                  <span class="h5 text-capitalize mb-0 text-nowrap">PO Number</span>
+                </dt>
+                <dd class="col-sm-7">
+                  <input type="text" class="form-control" value="PO-{{ form.instance.po_number }}" disabled />
+                </dd>
+                <dt class="col-sm-5 mb-2 d-md-flex align-items-center justify-content-end">
+                  <span class="fw-normal">Order Date:</span>
+                </dt>
+                <dd class="col-sm-7">
+                  {{ form.order_date }}
+                </dd>
+                <dt class="col-sm-5 d-md-flex align-items-center justify-content-end">
+                  <span class="fw-normal">Expected Delivery:</span>
+                </dt>
+                <dd class="col-sm-7">
+                  {{ form.expected_delivery_date }}
+                </dd>
+                <dt class="col-sm-5 mt-2 d-md-flex align-items-center justify-content-end">
+                  <span class="fw-normal">Status:</span>
+                </dt>
+                <dd class="col-sm-7 mt-2 mb-0">
+                  {{ po.get_status_display }}
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body px-0">
+          <div class="row">
+            <div class="col-md-6 col-sm-5 col-12 mb-sm-0">
+              <h6>Supplier:</h6>
+              {{ form.supplier }}
+            </div>
+            <div class="col-md-6 col-sm-7">
+              <h6>Warehouse:</h6>
+              {{ form.warehouse }}
+            </div>
+          </div>
+        </div>
+
+        <div class="px-0">
+          <div>
+              <label class="form-label">Remarks</label>
+              {{ form.notes }}
+          </div>
+        </div>
+
+        <hr class="mt-6 mb-2 border-secondary">
+
+        <!-- PO Items Section -->
+        <div class="mb-6">
+          <div class="card-body pt-0 px-0">
+            {{ item_formset.management_form }}
+            <div class="table-responsive mt-4">
+              <table class="table table-bordered border-secondary table-sm" id="po-items-table">
+                <thead>
+                  <tr class="table-light">
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                    <th><i class='ti ti-trash ti-xs'></i></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for form in item_formset %}
+                  {{ form.variation.errors }}{{ form.variation }}{{ form.id }}
+                  <tr class="po-item-form">
+                    <td>
+                      {{ form.instance.variation }}<br>
+                      <small>
+                        {% if form.instance.variation.barcode %}
+                          [BC: {{form.instance.variation.barcode}}]
+                        {% endif %}
+                        {% if form.instance.variation.sku %}
+                          [SKU: {{form.instance.variation.sku}}]
+                        {% endif %}
+                      </small>
+                    </td>
+                    <td>{{ form.quantity.errors }}{{ form.quantity }}</td>
+                    <td>{{ form.unit_price.errors }}{{ form.unit_price }}</td>
+                    <td>{{ form.instance.total }}</td>
+                    <td>{{ form.DELETE }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-4">
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productSelectionModal">
+                <i class="ti ti-plus ti-xs me-2"></i> Bulk Add Products
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-0 mb-10 border-secondary">
+
+        <div class="row row-gap-4">
+          <div class="col-md-6 mb-md-0 mb-4">
+          </div>
+          <div class="col-md-6 d-flex justify-content-end">
+            <div class="invoice-calculations">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="w-px-100">Subtotal:</span>
+                <span class="fw-medium text-heading">{{form.instance.total}}</span>
+              </div>
+              <hr class="border-secondary" />
+              <div class="d-flex justify-content-between">
+                <span class="w-px-100">Total:</span>
+                <span class="fw-medium text-heading">{{form.instance.total}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRN Section -->
+        <div class="card-header d-flex justify-content-between align-items-center px-0">
+          <h5 class="card-title mb-0">Goods Receipt Notes (GRN)</h5>
+        </div>
+        {% if po.goodsreceiptnote_set.exists %}
+          <table class="table table-sm table-bordered">
+            <thead>
+              <tr>
+                <th>GRN #</th>
+                <th>Date</th>
+                <th>Received By</th>
+                <th>Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for grn in po.goodsreceiptnote_set.all %}
+                <tr>
+                  <td><a href="{% url 'grns-update' grn.id %}">GRN-{{ grn.grn_number }}</a></td>
+                  <td>{{ grn.grn_date }}</td>
+                  <td>{{ grn.received_by }}</td>
+                  <td>{{ grn.total }}</td>
+                  <td>{{ grn.get_status_display }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="text-muted">No GRNs recorded yet.</p>
+        {% endif %}
+        </div>
+  </div>
+
+  <!-- PO Actions -->
+  <div class="col-lg-3 col-12 invoice-actions">
+    <div class="card mb-6">
+      <div class="card-body">
+        <button disabled class="btn btn-primary d-grid w-100 mb-4" data-bs-toggle="offcanvas" data-bs-target="#sendInvoiceOffcanvas">
+          <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-send ti-xs me-2"></i>Send Purchase Order</span>
+        </button>
+        <a href="#" class="btn btn-label-secondary d-grid w-100 mb-4">Download PDF</a>
+        <button type="submit" class="btn btn-outline-primary d-grid w-100 mb-4">Save</button>
+        </form>
+
+        {% if po.status == 'draft' %}
+        <form method="post" action="{% url 'po-update' po.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="po_submit" value="1">
+          <button type="submit" class="btn btn-primary d-grid w-100 mb-4">Submit Purchase Order</button>
+        </form>
+        {% endif %}
+
+        {% if po.status == 'submitted' %}
+        <form method="post" action="{% url 'po-update' po.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="po_approve" value="1">
+          <button type="submit" class="btn btn-primary d-grid w-100 mb-4">Approve Purchase Order</button>
+        </form>
+        {% endif %}
+
+        {% if po.status == 'approved' %}
+        <form method="post" action="{% url 'grns-add' %}">
+          {% csrf_token %}
+          <input type="hidden" name="purchase_order" value="{{ form.instance.id }}">
+          <input type="hidden" name="status" value="draft">
+          <button type="submit" class="btn btn-success d-grid w-100 mb-4">Add GRN</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <!-- /PO Actions -->
+</div>
+
+{% include 'partials/product_selection_modal.html' %}
+
+{% endblock %}

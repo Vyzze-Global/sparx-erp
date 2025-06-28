@@ -4,7 +4,7 @@ from .models import (
     Attribute, AttributeValue, Product, ProductImage, ProductVariation,
     ProductVariationOption, Batch, Inventory, PurchaseOrder,
     PurchaseOrderItem, GoodsReceiptNote, GoodsReceiptNoteItem,
-    PurchaseReturn, PurchaseReturnItem
+    PurchaseReturn, PurchaseReturnItem, StockTransaction
 )
 
 ### Inlines & Utilities
@@ -106,14 +106,14 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(ProductVariation)
 class ProductVariationAdmin(admin.ModelAdmin):
-    list_display = ('product', 'title', 'sku', 'barcode', 'standard_price', 'stock_quantity', 'is_active')
+    list_display = ('product', 'title', 'sku', 'barcode', 'standard_price', 'is_active')
     search_fields = ('product__name', 'title', 'sku', 'barcode')
     list_filter = ('is_active',)
     inlines = [ProductVariationOptionInline, BatchInline]
 
 @admin.register(Batch)
 class BatchAdmin(admin.ModelAdmin):
-    list_display = ('batch_number', 'variation', 'stock_quantity', 'expiry_date', 'is_active')
+    list_display = ('batch_number', 'variation', 'expiry_date', 'is_active')
     search_fields = ('batch_number', 'variation__product__name')
     list_filter = ('is_active', 'expiry_date')
     raw_id_fields = ('variation',)
@@ -148,8 +148,66 @@ class PurchaseReturnAdmin(admin.ModelAdmin):
     inlines = [PurchaseReturnItemInline]
     raw_id_fields = ('supplier', 'grn', 'approved_by')
 
-### Optional: registering stand-alone models without inlines
+@admin.register(StockTransaction)
+class StockTransactionAdmin(admin.ModelAdmin):
+    # Fields to display in the list view
+    list_display = (
+        'transaction_type_display',
+        'variation_product_name',
+        'quantity',
+        'adjustment_type',
+        'warehouse',
+        'batch',
+        'created_at',
+    )
 
+    # Fields to filter by
+    list_filter = (
+        'transaction_type',
+        'adjustment_type',
+        'warehouse',
+        'created_at',
+    )
+
+    # Fields to search
+    search_fields = (
+        'variation__product__name',  # Search by product name in ProductVariation
+        'remark',
+    )
+
+    # Fields to make read-only
+    readonly_fields = ('id', 'created_at')
+
+    # Optimize foreign key fields with many records
+    raw_id_fields = ('variation', 'batch', 'warehouse', 'purchase_order', 'grn', 'purchase_return', 'order', 'order_return')
+
+    # Order by creation date (newest first)
+    ordering = ('-created_at',)
+
+    # Customize displayed fields
+    def transaction_type_display(self, obj):
+        return obj.get_transaction_type_display()
+    transaction_type_display.short_description = 'Transaction Type'
+
+    def variation_product_name(self, obj):
+        return obj.variation.product.name
+    variation_product_name.short_description = 'Product'
+
+    # Optional: Add fieldsets for better form organization
+    fieldsets = (
+        (None, {
+            'fields': ('id', 'transaction_type', 'adjustment_type', 'quantity', 'remark', 'created_at')
+        }),
+        ('Relations', {
+            'fields': ('variation', 'batch', 'warehouse', 'purchase_order', 'grn', 'purchase_return', 'order', 'order_return')
+        }),
+    )
+
+    # Optional: Improve performance by prefetching related objects
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('variation__product', 'warehouse', 'batch')
+
+### Optional: registering stand-alone models without inlines
 admin.site.register(ProductImage)
 admin.site.register(ProductVariationOption)
 admin.site.register(PurchaseOrderItem)

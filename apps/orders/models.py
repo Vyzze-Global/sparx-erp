@@ -193,8 +193,7 @@ class OrderItem(models.Model):
     item_total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
 
     order = models.ForeignKey(Order, blank=False, null=False, on_delete=models.CASCADE, related_name="order_items")
-    product = models.ForeignKey(Product, blank=True, null=True, on_delete=models.SET_NULL)
-    product_variant = models.ForeignKey(ProductVariation, blank=True, null=True, on_delete=models.SET_NULL)
+    variation = models.ForeignKey(ProductVariation, blank=True, null=True, on_delete=models.SET_NULL)
     batch = models.ForeignKey(Batch, blank=True, null=True, on_delete=models.SET_NULL)
 
     class Meta:

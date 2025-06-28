@@ -702,7 +702,7 @@ html[class] .bootstrap-select.form-select {
 
 .light-style .bootstrap-select .dropdown-toggle.show,
 .light-style .bootstrap-select .dropdown-toggle:focus {
-  border: 2px solid #EE3338;
+  border: 2px solid #EF413F;
 }
 
 .light-style .bootstrap-select .dropdown-toggle:not(.show):hover {
@@ -739,7 +739,7 @@ html[class] .bootstrap-select.form-select {
 
 .dark-style .bootstrap-select .dropdown-toggle.show,
 .dark-style .bootstrap-select .dropdown-toggle:focus {
-  border: 2px solid #EE3338;
+  border: 2px solid #EF413F;
 }
 
 .dark-style .bootstrap-select .dropdown-toggle:not(.show):hover {

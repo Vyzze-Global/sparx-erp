@@ -7,7 +7,7 @@ from apps.products.models import Department
 
 class DepartmentListView(PermissionRequiredMixin, TemplateView):
     permission_required = ("products.view_department",)
-    template_name = "departments/departments_list.html"  # adjust to your template path
+    template_name = "departments/departments_list.html" 
 
     def get_context_data(self, **kwargs):
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))
