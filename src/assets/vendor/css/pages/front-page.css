@@ -186,7 +186,7 @@ nav.layout-navbar.navbar-active::after {
 .light-style .layout-navbar .navbar.landing-navbar .navbar-nav .active>.nav-link,
 .light-style .layout-navbar .navbar.landing-navbar .navbar-nav .nav-link.show,
 .light-style .layout-navbar .navbar.landing-navbar .navbar-nav .nav-link.active {
-  color: #EE3338 !important;
+  color: #EF413F !important;
 }
 
 .light-style .layout-navbar .navbar.landing-navbar .navbar-nav .nav-item.mega-dropdown>.dropdown-menu .mega-dropdown-link i {
@@ -221,7 +221,7 @@ nav.layout-navbar.navbar-active::after {
 .dark-style .layout-navbar .navbar.landing-navbar .navbar-nav .active>.nav-link,
 .dark-style .layout-navbar .navbar.landing-navbar .navbar-nav .nav-link.show,
 .dark-style .layout-navbar .navbar.landing-navbar .navbar-nav .nav-link.active {
-  color: #EE3338 !important;
+  color: #EF413F !important;
 }
 
 .dark-style .layout-navbar .navbar.landing-navbar .navbar-nav .nav-item.mega-dropdown>.dropdown-menu .mega-dropdown-link i {

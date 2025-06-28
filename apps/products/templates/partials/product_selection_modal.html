@@ -1,0 +1,53 @@
+<div class="modal fade" id="productSelectionModal" tabindex="-1" aria-labelledby="productSelectionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="productSelectionModalLabel">Select Products</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Row grouping -->
+        <div class="card-datatable">
+            <table class="dt-row-grouping table">
+              <thead>
+                <tr>
+                  <th>ID</th> <!-- Checkbox -->
+                  <th>Product</th> <!-- Hidden for grouping -->
+                  <th>Name & Variations</th> <!-- Image -->
+                  <th>Department</th>
+                  <th>Category</th>
+                  <th>Suppliers</th>
+                  <th>Price</th>
+                  <th>Barcode</th>
+                  <th>SKU</th>
+                  <th>Stock</th>
+                  <th>Quantity</th> <!-- New Quantity column -->
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tfoot>
+                <tr>
+                  <th>ID</th>
+                  <th>Product</th>
+                  <th>Variation</th>
+                  <th>Department</th>
+                  <th>Category</th>
+                  <th>Suppliers</th>
+                  <th>Price</th>
+                  <th>Barcode</th>
+                  <th>SKU</th>
+                  <th>Stock</th>
+                  <th>Quantity</th>
+                  <th>Status</th>
+                </tr>
+              </table>
+            </div>
+<!--/ Row grouping -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="addSelectedProducts">Add Selected Products</button>
+      </div>
+    </div>
+  </div>
+</div>

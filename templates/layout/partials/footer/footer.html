@@ -4,15 +4,18 @@
     <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
       <div class="text-body">
         <small>
-        © <script>
-        document.write(new Date().getFullYear())
+          © <script>
+          document.write(new Date().getFullYear())
 
-        </script> Made with ❤️ by <a href="{% get_theme_variables 'creator_url' %}" target="_blank" class="footer-link">{% get_theme_variables 'creator_name' %}</a>
-      </small>
+          </script> Made with ❤️ by <a href="{% get_theme_variables 'creator_url' %}" target="_blank" class="footer-link">{% get_theme_variables 'creator_name' %} PVT Ltd</a> and IT Technologies LLC.
+        </small>
       </div>
       <div class="d-none d-lg-inline-block">
         <small>
-          <a href="https://my.vyzze.com/" target="_blank" class="footer-link d-none d-sm-inline-block">My Vyzze</a>
+          <a href="https://my.vyzze.com/" class="footer-link me-4" target="_blank">My Vyzze</a>
+          {% comment %} <a href="{% get_theme_variables 'more_themes' %}" target="_blank" class="footer-link me-4">More Themes</a>
+          <a href="{% get_theme_variables 'documentation' %}" target="_blank" class="footer-link me-4">Documentation</a>
+          <a href="{% get_theme_variables 'support' %}" target="_blank" class="footer-link d-none d-sm-inline-block">Support</a> {% endcomment %}
         </small>
       </div>
     </div>

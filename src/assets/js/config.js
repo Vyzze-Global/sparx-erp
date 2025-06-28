@@ -10,7 +10,7 @@
 // JS global variables
 window.config = {
   colors: {
-    primary: '#EE3338',
+    primary: '#EF413F',
     secondary: '#808390',
     success: '#28c76f',
     info: '#00bad1',
@@ -27,7 +27,7 @@ window.config = {
     borderColor: '#e6e6e8'
   },
   colors_label: {
-    primary: '#EE333829',
+    primary: '#EF413F29',
     secondary: '#a8aaae29',
     success: '#28c76f29',
     info: '#00cfe829',

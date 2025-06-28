@@ -6,6 +6,7 @@ from web_project import TemplateLayout
 from apps.transactions.models import Transaction
 from apps.transactions.forms import TransactionForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
+
 class TransactionAddView(PermissionRequiredMixin, TemplateView):
     permission_required = ("transactions.add_transaction")
 

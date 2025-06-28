@@ -2,8 +2,9 @@ import uuid
 
 from django.db import models, transaction
 from django.db.models import F, Sum
-from auth.models import EmployeeProfile, CustomerProfile
+from auth.models import EmployeeProfile
 from django.utils.text import slugify
+from django.core.exceptions import ValidationError
 
 def get_unique_slug(model, base_slug, max_length):
     """Generate a unique slug by appending -number if needed."""
@@ -198,7 +199,7 @@ class ProductVariation(models.Model):
     
     title = models.CharField(max_length=255, blank=True, null=True, help_text="Variation Title")
     cartesian_product_key = models.CharField(max_length=255, db_index=True, null=True)
-    sku = models.CharField(max_length=100, blank=True, null=True)
+    sku = models.CharField(max_length=100, unique=True, blank=True, null=True)
     barcode = models.CharField(max_length=100, unique=True, blank=True, null=True)
 
     standard_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -251,7 +252,6 @@ class ProductVariationOption(models.Model):
 class Batch(models.Model):
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
     batch_number = models.CharField(max_length=100)
-    stock_quantity = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
     manufactured_date = models.DateField(blank=True, null=True)
     expiry_date = models.DateField(null=True, blank=True)  # For perishable goods
     cost_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, default=0)
@@ -275,6 +275,7 @@ class Inventory(models.Model):
     batch = models.ForeignKey(Batch, on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     reserved_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    is_primary = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('warehouse', 'variation', 'batch')
@@ -299,9 +300,6 @@ class PurchaseOrder(models.Model):
     total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
     notes = models.TextField(blank=True, null=True)
 
-    def po_total(self):
-        return sum(item.total for item in self.items.all())
-
     def save(self, *args, **kwargs):
         if not self.po_number:
             # get the highest existing GoodsReceiptNote instance and increment it
@@ -314,8 +312,16 @@ class PurchaseOrder(models.Model):
 
         super().save(*args, **kwargs)
 
+    def update_total(self):
+        """
+        Update the total of this PurchaseOrder by summing the totals of all related items.
+        """
+        total = self.items.aggregate(models.Sum('total'))['total__sum'] or 0
+        self.total = total
+        self.save()
+
     def __str__(self):
-        return f"PO-{self.id} to {self.supplier.name}"
+        return f"PO-{self.po_number}"
     
 class PurchaseOrderItem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -323,12 +329,35 @@ class PurchaseOrderItem(models.Model):
     variation = models.ForeignKey(ProductVariation, on_delete=models.CASCADE)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity_received = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
     total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
     expected_delivery_date = models.DateField(null=True, blank=True)
 
+    @property
+    def quantity_to_receive(self):
+        return max(self.quantity - self.quantity_received, 0)
+    
+    @property
+    def entered_quantity_to_receive(self):
+        # Sum the quantity_received from GoodsReceiptNoteItems where the GRN status is not 'received' or 'rejected'
+        entered_quantity = self.grn_items.filter(
+            grn__status__in=['draft', 'inspected', 'approved']
+        ).aggregate(total=Sum('quantity_received'))['total'] or 0
+        return entered_quantity
+
     def save(self, *args, **kwargs):
-        self.total_price = self.quantity * self.unit_price
+        # Calculate the total for this item
+        self.total = self.quantity * self.unit_price
         super().save(*args, **kwargs)
+        # Update the parent PurchaseOrder's total
+        self.purchase_order.update_total()
+
+    def delete(self, *args, **kwargs):
+        # Store the purchase order reference before deletion
+        purchase_order = self.purchase_order
+        super().delete(*args, **kwargs)
+        # Update the parent PurchaseOrder's total after deletion
+        purchase_order.update_total()
 
     def __str__(self):
         return f"{self.purchase_order.po_number} - {self.variation.product.name}"
@@ -352,6 +381,7 @@ class GoodsReceiptNote(models.Model):
         ('approved', 'Approved'),
         ('rejected', 'Rejected')
     ], default='draft')
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.SET_NULL, null=True, blank=True)
     remarks = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
@@ -372,21 +402,100 @@ class GoodsReceiptNote(models.Model):
 class GoodsReceiptNoteItem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     grn = models.ForeignKey(GoodsReceiptNote, on_delete=models.CASCADE, related_name='items')
+    po_item = models.ForeignKey(PurchaseOrderItem, on_delete=models.SET_NULL, null=True, blank=True, related_name='grn_items')
     variation = models.ForeignKey(ProductVariation, on_delete=models.CASCADE)
     batch = models.ForeignKey(Batch, on_delete=models.SET_NULL, null=True, blank=True)
     quantity_received = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
-    cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
     total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
-    free_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_free_item = models.BooleanField(default=False)
-    warehouse = models.ForeignKey(Warehouse, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def clean(self):
+        # Validate quantity for non-free items against PO
+        if self.po_item and not self.is_free_item:
+            total_received = (
+                GoodsReceiptNoteItem.objects
+                .filter(po_item=self.po_item, is_free_item=False)
+                .exclude(id=self.id)
+                .aggregate(Sum('quantity_received'))['quantity_received__sum'] or 0
+            )
+            total_received += self.quantity_received or 0
+
+            if total_received > self.po_item.quantity:
+                raise ValidationError({
+                    'quantity_received': (
+                        f"Exceeds ordered quantity ({self.po_item.quantity}) for non-free items."
+                    )
+                })
+
+        # Check for duplicate batches based on free/non-free status
+        if self.batch:
+            # If this is a free item, ensure no other free item with the same batch exists in the GRN
+            if self.is_free_item:
+                duplicate_free = (
+                    GoodsReceiptNoteItem.objects
+                    .filter(
+                        grn=self.grn,
+                        batch=self.batch,
+                        is_free_item=True
+                    )
+                    .exclude(id=self.id)
+                    .exists()
+                )
+                if duplicate_free:
+                    raise ValidationError({
+                        'batch': (
+                            f"Batch {self.batch} is already used for a free item in this GRN."
+                        )
+                    })
+            # If this is a non-free item, ensure no other non-free item with the same batch exists in the GRN
+            else:
+                duplicate_non_free = (
+                    GoodsReceiptNoteItem.objects
+                    .filter(
+                        grn=self.grn,
+                        batch=self.batch,
+                        is_free_item=False
+                    )
+                    .exclude(id=self.id)
+                    .exists()
+                )
+                if duplicate_non_free:
+                    raise ValidationError({
+                        'batch': (
+                            f"Batch {self.batch} is already used for a non-free item in this GRN."
+                        )
+                    })
 
     def save(self, *args, **kwargs):
-        paid_quantity = self.quantity_received - self.free_quantity
-        paid_quantity = max(paid_quantity, 0)  # Ensure non-negative
-        self.total = paid_quantity * self.cost
+        quantity = max(self.quantity_received, 0) if self.quantity_received else 0
+        # Set total to 0 for free items, otherwise calculate normally
+        self.total = 0 if self.is_free_item else quantity * self.unit_price
         super().save(*args, **kwargs)
+
+        # Update the GRN total by summing the totals of all non-free items
+        grn_total = (
+            GoodsReceiptNoteItem.objects
+            .filter(grn=self.grn, is_free_item=False)
+            .aggregate(Sum('total'))['total__sum'] or 0
+        )
+        self.grn.total = grn_total
+        self.grn.save()
+
+    def delete(self, *args, **kwargs):
+        quantity = max(self.quantity_received, 0) if self.quantity_received else 0
+        # Set total to 0 for free items, otherwise calculate normally
+        self.total = 0 if self.is_free_item else quantity * self.unit_price
+        super().delete(*args, **kwargs)
+
+        # Update the GRN total by summing the totals of all non-free items
+        grn_total = (
+            GoodsReceiptNoteItem.objects
+            .filter(grn=self.grn, is_free_item=False)
+            .aggregate(Sum('total'))['total__sum'] or 0
+        )
+        self.grn.total = grn_total
+        self.grn.save()
 
     def __str__(self):
         return f"{self.grn.grn_number} - {self.variation.product.name}"
@@ -441,34 +550,36 @@ class PurchaseReturnItem(models.Model):
     def __str__(self):
         return f"{self.return_order.return_number} - {self.variation.product.name}"
 
-# class StockTransaction(models.Model):
+class StockTransaction(models.Model):
+    TRANSACTION_TYPES = [
+        ('sale', 'Sale'),
+        ('sales_return', 'Sales Return'),
+        ('purchase', 'Purchase'),
+        ('purchase_return', 'Purchase Return'),
+        ('expiry', 'Expiry'),
+        ('damage', 'Damage'),
+        ('other', 'Other'),
+    ]
 
-#     TRANSACTION_TYPES = [
-#         ('sale', 'Sale'),
-#         ('sales_return', 'Sales Return'),
-#         ('purchase', 'Purchase'),
-#         ('purchase_return', 'Purchase Return'),
-#         ('expiry', 'Expiry'),
-#         ('damage', 'Damage'),
-#         ('other', 'Other'),
-#     ]
+    ADJUSTMENT_TYPES = [('in', 'In'), ('out', 'Out')]
 
-#     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
-#     transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
-#     quantity = models.DecimalField(max_digits=10, decimal_places=2)
-#     remark = models.TextField(blank=True, null=True)
-#     adjustment_type = models.CharField(max_length=20, null=True, choices=[('in', 'In'), ('out', 'Out')])
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
+    adjustment_type = models.CharField(max_length=20, choices=ADJUSTMENT_TYPES)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
+    remark = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-#     # Relationships to other models
-#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-#     variation = models.ForeignKey(ProductVariation, null=True, blank=True, on_delete=models.CASCADE)
-#     purchase_order = models.ForeignKey(PurchaseOrder, null=True, blank=True, on_delete=models.SET_NULL)
-#     grn = models.ForeignKey(GoodsReceiptNote, null=True, blank=True, on_delete=models.SET_NULL)
-#     purchase_return = models.ForeignKey(ProductReturnOrder, null=True, blank=True, on_delete=models.SET_NULL)
-#     # order_return = models.ForeignKey('orders.OrderReturn', null=True, blank=True, on_delete=models.SET_NULL)
-#     # order = models.ForeignKey('orders.Order', null=True, blank=True, on_delete=models.SET_NULL)
-#     batch = models.ForeignKey(Batch, null=True, blank=True, on_delete=models.SET_NULL) 
+    variation = models.ForeignKey(ProductVariation, on_delete=models.CASCADE)
+    batch = models.ForeignKey(Batch, null=True, blank=True, on_delete=models.SET_NULL)
+    warehouse = models.ForeignKey(Warehouse, null=True, blank=True, on_delete=models.SET_NULL)
 
+    # Optional relations for traceability
+    purchase_order = models.ForeignKey(PurchaseOrder, null=True, blank=True, on_delete=models.SET_NULL)
+    grn = models.ForeignKey(GoodsReceiptNote, null=True, blank=True, on_delete=models.SET_NULL)
+    purchase_return = models.ForeignKey(PurchaseReturn, null=True, blank=True, on_delete=models.SET_NULL)
+    order_return = models.ForeignKey('orders.orderreturn', null=True, blank=True, on_delete=models.SET_NULL)
+    order = models.ForeignKey('orders.order', null=True, blank=True, on_delete=models.SET_NULL)
 
-#     def __str__(self):
-#         return f"{self.get_transaction_type_display()} - {self.product.name} - {self.quantity}"
+    def __str__(self):
+        return f"{self.get_transaction_type_display()} - {self.variation.product.name} - {self.quantity} ({self.adjustment_type})"

@@ -47,15 +47,6 @@ class ProductAddView(PermissionRequiredMixin, TemplateView):
                             attribute_data = request.POST.get(f'variations-{i}-on-the-fly-attributes', '')
                             if attribute_data:
                                 attributes = json.loads(attribute_data)  # Parse JSON string
-                                # key_parts = [attr["value"] for attr in attributes]  # Extract values (e.g., "Red", "Green")
-                                # variation.cartesian_product_key = "/".join(key_parts)  # Set key (e.g., "Red" or "Green")
-                                # variation.title = " / ".join(key_parts)  # Set title
-                                
-                                # # Generate a sample SKU
-                                # sku_parts = [product.slug[:8].upper()] + [part[:3].upper() for part in key_parts]
-                                # variation.sku = "-".join(sku_parts)
-
-                            # Save the variation with the generated key and image
 
                             # Clear existing options before adding new ones
                             ProductVariationOption.objects.filter(variation=variation).delete()

@@ -350,11 +350,11 @@ html:not([dir=rtl]) .fc .fc-view-harness .fc-scrollgrid-section-header>* {
 
 .light-style .fc-event-primary:not(.fc-list-event) {
   background-color: #e9e7fd !important;
-  color: #EE3338 !important;
+  color: #EF413F !important;
 }
 
 .light-style .fc-event-primary.fc-list-event .fc-list-event-dot {
-  border-color: #EE3338 !important;
+  border-color: #EF413F !important;
 }
 
 .light-style .fc-event-secondary:not(.fc-list-event) {
@@ -549,7 +549,7 @@ html:not([dir=rtl]) .fc .fc-view-harness .fc-scrollgrid-section-header>* {
 
 .dark-style .fc-event-primary:not(.fc-list-event) {
   background-color: #3a3b64 !important;
-  color: #EE3338 !important;
+  color: #EF413F !important;
 }
 
 .dark-style .fc-event-primary:not(.fc-list-event) {
@@ -557,7 +557,7 @@ html:not([dir=rtl]) .fc .fc-view-harness .fc-scrollgrid-section-header>* {
 }
 
 .dark-style .fc-event-primary.fc-list-event .fc-list-event-dot {
-  border-color: #EE3338 !important;
+  border-color: #EF413F !important;
 }
 
 .dark-style .fc-event-secondary:not(.fc-list-event) {

@@ -50,8 +50,8 @@
     <!-- Login -->
     <div class="d-flex col-12 col-lg-4 align-items-center authentication-bg p-sm-12 p-6">
       <div class="w-px-400 mx-auto mt-12 pt-5">
-        <h4 class="mb-1">Welcome to {% get_theme_variables 'template_name' %} Cloud! 👋</h4>
-        <p class="mb-6">Please sign-in to your account and start the adventure</p>
+        <h4 class="mb-1">Welcome to {% get_theme_variables 'template_name' %}! 👋</h4>
+        <p class="mb-6">Please sign-in to your account.</p>
         {% comment %} <div class="alert alert-primary small">
           <p class="text-caption mb-1"> Admin Email: <strong>admin@demo.com</strong> / Username: <strong>admin</strong>
             <span class="cursor-pointer" id="admin-user"><i class="ti ti-help ti-xs text-body mb-1" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Admin User" data-bs-content="Can access User, Roles, and Permissions pages. Possesses permissions to View, Update, Delete, and Create transactions on the Transaction Page."></i></span>
@@ -101,12 +101,12 @@
           <button class="btn btn-primary d-grid w-100" type="submit">Sign in</button>
         </form>
 
-        <p class="text-center">
+        {% comment %} <p class="text-center">
           <span>New on our platform?</span>
           <a href="{% url 'register' %}">
             <span>Create an account</span>
           </a>
-        </p>
+        </p> {% endcomment %}
       </div>
     </div>
     <!-- /Login -->

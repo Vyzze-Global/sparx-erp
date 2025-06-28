@@ -1083,24 +1083,24 @@ button.list-group-item-primary.active {
 .jstree-default .jstree-wholerow-hovered,
 .jstree-default .jstree-hovered {
   background: rgba(44, 53, 126, 0.16);
-  color: #EE3338;
+  color: #EF413F;
 }
 
 .jstree-default .jstree-wholerow-clicked,
 .jstree-default .jstree-clicked {
-  background: #EE3338;
+  background: #EF413F;
   color: #fff;
 }
 
 .jstree-default-dark .jstree-wholerow-hovered,
 .jstree-default-dark .jstree-hovered {
   background: rgba(44, 53, 126, 0.16);
-  color: #EE3338;
+  color: #EF413F;
 }
 
 .jstree-default-dark .jstree-wholerow-clicked,
 .jstree-default-dark .jstree-clicked {
-  background: #EE3338;
+  background: #EF413F;
   color: #fff;
 }
 

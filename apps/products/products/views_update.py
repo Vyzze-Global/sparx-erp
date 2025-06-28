@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
 from web_project import TemplateLayout
-from apps.products.models import Product, Attribute, AttributeValue, ProductVariation, ProductVariationOption
+from apps.products.models import Product, Attribute, AttributeValue, ProductVariation, ProductVariationOption, Warehouse
 from apps.products.products.forms import ProductForm, VariationFormSet
 
 class ProductUpdateView(PermissionRequiredMixin, TemplateView):
@@ -17,6 +17,7 @@ class ProductUpdateView(PermissionRequiredMixin, TemplateView):
         context['variation_formset'] = VariationFormSet(prefix='variations', instance=product)
         context['attributes'] = Attribute.objects.prefetch_related('values').all()
         context['product'] = product
+        context['warehouses'] = Warehouse.objects.all()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -63,7 +64,7 @@ class ProductUpdateView(PermissionRequiredMixin, TemplateView):
                     variation_formset.save_m2m()  # If there are any many-to-many fields
 
                     messages.success(request, f"Product '{product.name}' was updated successfully.")
-                    return redirect('products')
+                    return redirect("products-update", pk=product.pk)
             except Exception as e:
                 messages.error(request, f"An error occurred while updating the product: {e}")
         else:

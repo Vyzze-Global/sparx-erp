@@ -3,20 +3,27 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}Product List{% endblock %}
+{% block title %}Product Variations{% endblock %}
 
 {% block vendor_css %}
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'vendor/libs/datatables-bs5/datatables.bootstrap5.css' %}" />
 <link rel="stylesheet" href="{% static 'vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css' %}" />
 <link rel="stylesheet" href="{% static 'vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css' %}" />
-<link rel="stylesheet" href="{% static 'vendor/libs/select2/select2.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/flatpickr/flatpickr.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-rowgroup-bs5/rowgroup.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/@form-validation/form-validation.css' %}" />
 {% endblock vendor_css %}
 
 {% block vendor_js %}
 {{ block.super }}
 <script src="{% static 'vendor/libs/datatables-bs5/datatables-bootstrap5.js' %}"></script>
-<script src="{% static 'vendor/libs/select2/select2.js' %}"></script>
+<script src="{% static 'vendor/libs/moment/moment.js' %}"></script>
+<script src="{% static 'vendor/libs/flatpickr/flatpickr.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/popular.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/auto-focus.js' %}"></script>
 {% endblock vendor_js %}
 
 {% block page_js %}
@@ -25,33 +32,49 @@
 {% endblock page_js %}
 
 {% block content %}
-<!-- Product List Table -->
+
+<!-- Row grouping -->
 <div class="card">
-  <div class="card-header">
-    <h5 class="card-title">{% trans "Product List" %}</h5>
-    <div class="d-flex justify-content-between align-items-center row pt-4 gap-6 gap-md-0">
-      <div class="col-md-4 product_status"></div>
-      <div class="col-md-4 product_category"></div>
-      <div class="col-md-4 product_stock"></div>
-    </div>
-  </div>
+  <h5 class="card-header">Product Variations</h5>
   <div class="card-datatable table-responsive">
-    <table class="datatables-products table">
-      <thead class="border-top">
+    <table class="dt-row-grouping table">
+      <thead>
         <tr>
-          <th></th>
-          <th></th>
-          <th>{% trans "Product" %}</th>
-          <th>{% trans "Category" %}</th>
-          <th>{% trans "Stock" %}</th>
-          <th>{% trans "SKU" %}</th>
-          <th>{% trans "Price" %}</th>
-          <th>{% trans "Quantity" %}</th>
-          <th>{% trans "Status" %}</th>
-          <th>{% trans "Actions" %}</th>
+          <th></th> <!-- Control -->
+          <th>ID</th> <!-- Checkbox -->
+          <th>Product</th> <!-- Hidden for grouping -->
+          <th>Variation</th> <!-- Image -->
+          <th>Department</th>
+          <th>Category</th>
+          <th>Suppliers</th>
+          <th>Price</th>
+          <th>Barcode</th>
+          <th>SKU</th>
+          <th>Stock</th>
+          <th>Status</th>
+          <th>Action</th>
         </tr>
       </thead>
+      <tfoot>
+        <tr>
+          <th></th>
+          <th>ID</th>
+          <th>Product</th>
+          <th>Variation</th>
+          <th>Department</th>
+          <th>Category</th>
+          <th>Suppliers</th>
+          <th>Price</th>
+          <th>Barcode</th>
+          <th>SKU</th>
+          <th>Stock</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </tfoot>
     </table>
   </div>
 </div>
+<!--/ Row grouping -->
+
 {% endblock %}

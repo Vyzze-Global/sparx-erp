@@ -1,0 +1,473 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load template_filters %}
+{% load i18n %}
+
+{% block title %}Update GRN{% endblock %}
+
+{% block vendor_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'vendor/libs/select2/select2.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/flatpickr/flatpickr.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-bs5/datatables.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/flatpickr/flatpickr.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/datatables-rowgroup-bs5/rowgroup.bootstrap5.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/libs/@form-validation/form-validation.css' %}" />
+{% endblock %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/select2/select2.js' %}"></script>
+<script src="{% static 'vendor/libs/flatpickr/flatpickr.js' %}"></script>
+<script src="{% static 'vendor/libs/datatables-bs5/datatables-bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/moment/moment.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/popular.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/bootstrap5.js' %}"></script>
+<script src="{% static 'vendor/libs/@form-validation/auto-focus.js' %}"></script>
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+{% endblock %}
+
+{% block page_js %}
+{{ block.super }}
+<script>
+$(document).ready(function () {
+  // Generic initialization for all select2 fields
+  $('.select2').select2({
+    dropdownParent: $(this).parent()
+  });
+
+  // Re-initialize select2 when modal is opened
+  $('div.modal').on('shown.bs.modal', function () {
+    $(this).find('.select2').each(function () {
+      const $this = $(this);
+      // Destroy any existing instance to prevent duplication
+      if ($this.hasClass("select2-hidden-accessible")) {
+        $this.select2('destroy');
+      }
+      $this.select2({
+        dropdownParent: $this.closest('.modal'),
+        placeholder: 'Select value'
+      });
+    });
+  });
+});
+</script>
+{% endblock page_js %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 row-gap-4">
+    <div class="d-flex flex-column justify-content-center">
+        <h4 class="mb-1">Update GRN-{{ form.instance.grn_number }}</h4>
+    </div>
+    <div class="d-flex align-content-center flex-wrap gap-4">
+        <a href="{% url 'pos' %}" class="btn btn-label-secondary">GRN List</a>
+    </div>
+</div>
+
+<div class="row invoice-add">
+    <div class="col-lg-9 col-12 mb-lg-0 mb-6">
+        <form method="post" enctype="multipart/form-data" id="grn-form">
+            {% csrf_token %}
+            <input type="hidden" name="grn_update" value="1">
+            <input type="hidden" name="purchase_order" value="{{ grn.purchase_order.id }}">
+            {{ form.status }}
+            <div class="card invoice-preview-card p-sm-12 p-6">
+              <h4 class="mb-5">Goods Receipt Note</h4>
+                <div class="card-body invoice-preview-header rounded">
+                    <div class="d-flex flex-wrap flex-column flex-sm-row justify-content-between text-heading">
+                        <div class="mb-md-0 mb-6">
+                            <div class="d-flex svg-illustration mb-6 gap-2 align-items-center">
+                                <div class="app-brand-logo demo">
+                                    {% include 'partials/logo.html' with height=20 bgcolor="fill: #fff;" %}
+                                </div>
+                                <span class="app-brand-text fw-bold fs-4 ms-50">
+                                    {% get_theme_variables 'template_name' %}
+                                </span>
+                            </div>
+                            <p class="mb-2">62 Colombo - Horana Rd,</p>
+                            <p class="mb-2">Piliyandala 10300, Sri Lanka</p>
+                            <p class="mb-3">0115 219 460</p>
+                        </div>
+                        <div class="col-md-5 col-8 pe-0 ps-0 ps-md-2">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-5 mb-2 d-md-flex align-items-center justify-content-end">
+                                    <span class="h5 text-capitalize mb-0 text-nowrap">GRN Number</span>
+                                </dt>
+                                <dd class="col-sm-7">
+                                    <input type="text" class="form-control" value="GRN-{{ form.instance.grn_number }}" disabled />
+                                </dd>
+                                <dt class="col-sm-5 mb-2 d-md-flex align-items-center justify-content-end">
+                                    <span class="fw-normal">GRN Date:</span>
+                                </dt>
+                                <dd class="col-sm-7">
+                                    {{ form.grn_date }}
+                                </dd>
+                                <dt class="col-sm-5 d-md-flex align-items-center justify-content-end">
+                                    <span class="fw-normal">Purchase Order:</span>
+                                </dt>
+                                <dd class="col-sm-7 mt-2">
+                                    <a href="{% url 'po-update' grn.purchase_order.id %}">{{ grn.purchase_order }}</a>
+                                </dd>
+                                <dt class="col-sm-5 mt-2 d-md-flex align-items-center justify-content-end">
+                                    <span class="fw-normal">Status:</span>
+                                </dt>
+                                <dd class="col-sm-7 mt-2 mb-0">
+                                    {{ grn.get_status_display }}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body px-0">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-5 col-12 mb-sm-0">
+                            <h6>Supplier:</h6>
+                            {{ grn.purchase_order.supplier.name }}
+                        </div>
+                        <div class="col-md-6 col-sm-7">
+                            <h6>Warehouse:</h6>
+                            {{ form.warehouse }}
+                        </div>
+                    </div>
+                </div>
+                <div class="px-0">
+                    <div>
+                        <label class="form-label">Remarks</label>
+                        {{ form.remarks }}
+                    </div>
+                </div>
+                </form>
+                <hr class="mt-6 mb-2 border-secondary">
+
+                <!-- GRN Items Card -->
+                <div class="card-body pt-0 px-0">
+
+                  <!-- Variations Table -->
+                  <div class="table-responsive mt-4">
+                    <table class="table table-bordered border-secondary" id="variations-table">
+                      <thead>
+                        <tr>
+                          <th>Variation</th>
+                          <th>Barcode/SKU</th>
+                          <th>Unit Price</th>
+                          <th>PO Qty</th>
+                          <th>Qty to Receive</th>
+                          <th>Qty Entered</th>
+                          <th>Qty Received</th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for po_item in purchase_order_items %}
+                          <!-- Variation Row -->
+                          <tr class="variation-form table-light" id="variation-{{ po_item.id }}">
+                            <td>{{ po_item.variation }}</td>
+                            <td class="text-nowrap">
+                              <small>
+                                BCODE: {{ po_item.variation.barcode }}<br>
+                                SKU: {{ po_item.variation.sku }}
+                              </small>
+                            </td>
+                            <td>{{ po_item.unit_price }}</td>
+                            <td>{{ po_item.quantity }}</td>
+                            <td>{{ po_item.quantity_to_receive }}</td>
+                            <td>{{ po_item.entered_quantity_to_receive }}</td>
+                            <td>{{ po_item.quantity_received }}</td>
+                            <td>{{ po_item.total }}</td>
+                          </tr>
+                          <!-- Batches Table Row -->
+                          <tr class="batches-row">
+                            <td colspan="8">
+                              <div class="table-responsive">
+                                <table class="table table-bordered border-secondary table-sm">
+                                  <thead>
+                                    <tr>
+                                      <th>Batch #</th>
+                                      <th>Price</th>
+                                      <th>Exp Date</th>
+                                      <th>Is Free</th>
+                                      <th>Unit Price</th>
+                                      <th>Quantity</th>
+                                      <th>Total</th>
+                                      <th></th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for grn_item in grn_items_by_po_item|lookup:po_item.id %}
+                                        <tr>
+                                          <td>{{ grn_item.batch.batch_number }}</td>
+                                          <td>{{ grn_item.batch.price }}</td>
+                                          <td>{{ grn_item.batch.expiry_date|date:"Y-m-d" }}</td>
+                                          <td><div class="form-check form-switch d-flex justify-content-center">{{ grn_item.is_free_item }}</div></td>
+                                          <td>{{ grn_item.unit_price }}</td>
+                                          <td>{{ grn_item.quantity_received }}</td>
+                                          <td>{{ grn_item.total }}</td>
+                                          <td>
+                                            <a href="#" class="text-info" data-bs-toggle="modal" data-bs-target="#editGRNItemModal-{{ grn_item.id }}">
+                                              <i class='ti ti-edit ti-xs'></i>
+                                            </a>
+                                            <form action="{% url 'grns-item-delete' grn_item.id %}" method="post" style="display: inline;">
+                                              {% csrf_token %}
+                                              <button type="submit" class="btn btn-link text-danger p-0" onclick="return confirm('Are you sure you want to delete this GRN item?');">
+                                                <i class='ti ti-trash ti-xs'></i>
+                                              </button>
+                                            </form>
+                                          </td>
+                                        </tr>
+                                        <!-- Edit GRN Item Modal -->
+                                        <div class="modal fade" id="editGRNItemModal-{{ grn_item.id }}" tabindex="-1" aria-hidden="true">
+                                          <div class="modal-dialog">
+                                            <div class="modal-content">
+                                              <form method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="grn_item_update" value="1">
+                                                <input type="hidden" name="grn" value="{{ grn.id }}">
+                                                <input type="hidden" name="grn_item_id" value="{{ grn_item.id }}">
+                                                <input type="hidden" name="po_item" value="{{ grn_item.po_item.id }}">
+                                                <input type="hidden" name="variation" value="{{ grn_item.variation.id }}">
+                                                <div class="modal-header">
+                                                  <h5 class="modal-title">Update GRN Item</h5>
+                                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                  <!-- Batch -->
+                                                  <div class="mb-3">
+                                                    <label class="form-label">
+                                                      Batch
+                                                    </label>
+                                                    <select name="batch" class="select2 form-select">
+                                                      {% for batch in po_item.variation.batches.all %}
+                                                        <option value="{{ batch.id }}" {% if grn_item.batch.id == batch.id %}selected{% endif %}>
+                                                          {{ batch.batch_number }} - Exp: {{ batch.expiry_date }}
+                                                        </option>
+                                                      {% endfor %}
+                                                    </select>
+                                                  </div>
+
+                                                  <div class="mb-3">
+                                                    <label class="form-label">Quantity Received</label>
+                                                    <input type="number" name="quantity_received" value="{{ grn_item.quantity_received }}" class="form-control" required>
+                                                  </div>
+
+                                                  <div class="mb-3">
+                                                    <label class="form-label">Unit Price</label>
+                                                    <input type="number" class="form-control" name="unit_price" value="{{ grn_item.unit_price }}" required>
+                                                  </div>
+
+                                                  <div class="form-check form-switch">
+                                                    <input type="checkbox" name="is_free_item" class="form-check-input" {% if grn_item.is_free_item %}checked{% endif %}>
+                                                    <label class="form-check-label">Is Free Item</label>
+                                                  </div>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                  <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                  <button type="submit" class="btn btn-primary">Update Item</button>
+                                                </div>
+                                              </form>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <!-- END Edit GRN Item Modal -->
+                                      {% empty %}
+                                      <tr>
+                                        <td colspan="8" class="text-center">No Entries</td>
+                                      </tr>
+                                    {% endfor %}
+                                  </tbody>
+                                </table>
+                                <!-- Add Batch Button -->
+                                <button type="button" class="btn btn-sm btn-primary mt-2 add-entry-btn" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#addGRNItemModal-{{po_item.id}}">
+                                  <i class='ti ti-plus ti-xs me-1'></i>Add Entry
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+
+                        <!-- GRN Item Add Modal -->
+                        <div class="modal fade" id="addGRNItemModal-{{po_item.id}}" tabindex="-1" aria-labelledby="addGRNItemModalLabel-{{po_item.id}}" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="grn_item_add" value="1">
+                                <input type="hidden" name="grn" value="{{ grn.id }}">
+                                <input type="hidden" name="variation" value="{{po_item.variation.id }}">
+                                <input type="hidden" name="po_item" value="{{po_item.id}}">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="addGRNItemModalLabel">Add GRN Item</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                  <!-- Batch Selection with Add New Batch button -->
+                                  <div class="mb-3">
+                                    <label class="form-label d-flex justify-content-between align-items-center">
+                                      Batch
+                                      <a href="#" class="btn btn-sm btn-outline-primary"
+                                        hx-get="{% url 'batches-add-modal' po_item.variation.id %}"
+                                        hx-target="#modal-batch-body"
+                                        hx-trigger="click"
+                                        hx-swap="innerHTML"
+                                        onclick="showBatchModal()">
+                                        + New Batch
+                                      </a>
+                                    </label>
+                                    <select name="batch" class="select2 form-select" id="batch-select-{{ po_item.id }}">
+                                      {% for batch in po_item.variation.batches.all %}
+                                        <option value="{{ batch.id }}">{{ batch.batch_number }} - Exp: {{ batch.expiry_date }}</option>
+                                      {% endfor %}
+                                    </select>
+                                  </div>
+
+                                  <!-- Modal container to load new batch form via HTMX -->
+                                  <div id="modal-batch-add"></div>
+                                  <div class="mb-3">
+                                    <label class="form-label">Quantity Received</label>
+                                    {{ grn_item_form.quantity_received }}
+                                  </div>
+                                  <div class="mb-3">
+                                    <label class="form-label">Unit Price</label>
+                                    <input type="number" class="form-control" id="unit_price" name="unit_price" value="{{po_item.unit_price}}">
+                                  </div>
+                                  <div class="form-check form-switch">
+                                    {{ grn_item_form.is_free_item }}
+                                    <label class="form-check-label">Is Free Item</label>
+                                  </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
+                                  <button type="submit" class="btn btn-primary">Add Item</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- END: GRN Item Add Modal -->
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <!-- /GRN Items -->
+
+                <hr class="my-0 mb-10 border-secondary">
+
+                <div class="row row-gap-4">
+                    <div class="col-md-6 mb-md-0 mb-4"></div>
+                    <div class="col-md-6 d-flex justify-content-end">
+                        <div class="invoice-calculations">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="w-px-100">Subtotal:</span>
+                                <span class="fw-medium text-heading">{{ form.instance.total }}</span>
+                            </div>
+                            <hr class="border-secondary" />
+                            <div class="d-flex justify-content-between">
+                                <span class="w-px-100">Total:</span>
+                                <span class="fw-medium text-heading">{{ form.instance.total }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <div class="col-lg-3 col-12 invoice-actions">
+        <div class="card mb-6">
+            <div class="card-body">
+                <a href="#" class="btn btn-label-secondary d-grid w-100 mb-4">Download PDF</a>
+                <button type="submit" form="grn-form" class="btn btn-outline-primary d-grid w-100 mb-4">Save</button>
+ 
+                {% if grn.status == 'draft' %}
+                <form method="post" action="{% url 'grns-update' grn.id %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="grn_approve" value="1">
+                  <button type="submit" class="btn btn-primary d-grid w-100 mb-4">Approve GRN</button>
+                </form>
+                {% endif %}
+                
+                {% if grn.status == 'approved' %}
+                  <form method="post" action="{% url 'grns-update' grn.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="grn_inspected" value="1">
+                    <button type="submit" class="btn btn-primary d-grid w-100 mb-4">Mark Inspected</button>
+                  </form>
+                {% endif %}
+
+                {% if grn.status == 'inspected' %}
+                  <form method="post" action="{% url 'grns-update' grn.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="grn_received" value="1">
+                    <button type="submit" class="btn btn-success d-grid w-100 mb-4">Receive GRN</button>
+                  </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Static reusable modal -->
+<div class="modal fade" id="batchAddModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="modal-batch-body">
+      <!-- HTMX will load form body here -->
+    </div>
+  </div>
+</div>
+
+<script>
+function showBatchModal() {
+  const modal = new bootstrap.Modal(document.getElementById('batchAddModal'));
+  modal.show();
+}
+
+// Close modal if user clicks cancel (inside dynamically loaded content)
+document.addEventListener("click", function (event) {
+  if (event.target.matches('[data-bs-dismiss="modal"]')) {
+    const modalEl = document.getElementById('batchAddModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
+  }
+});
+
+// Close modal on HTMX response success and update batch select
+document.addEventListener("htmx:afterOnLoad", function (evt) {
+  const xhr = evt.detail.xhr;
+  const response = xhr.response;
+
+  try {
+    const data = JSON.parse(response);
+
+    if (data.success) {
+      const modalEl = document.querySelector('.modal.show');
+      if (!modalEl) return;
+
+      const select = modalEl.querySelector('select[name="batch"]');
+      const option = new Option(data.batch_label, data.batch_id, true, true);
+      select.append(option);
+      select.value = data.batch_id;
+
+      if ($(select).hasClass("select2-hidden-accessible")) {
+        $(select).trigger('change.select2');
+      }
+
+      bootstrap.Modal.getInstance(document.getElementById('batchAddModal')).hide();
+    } else if (!data.success && data.html) {
+      // Re-render the form with validation errors
+      document.getElementById("modal-batch-body").innerHTML = data.html;
+    }
+  } catch (e) {
+    console.error('Failed to parse JSON:', e);
+  }
+});
+</script>
+{% endblock %}
